@@ -147,65 +147,42 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      var n = this.get('n');
+      var n = this.get('n'); // length of board, which is 4
       var board = this.rows();
-      var start = majorDiagonalColumnIndexAtFirstRow;
-      var y = start;
-      // if (y < 0) {
-      //   y = 
-      // }
       var diagonal = [];
+      var columnIndex = majorDiagonalColumnIndexAtFirstRow; // y = columnIndex
 
-      // console.log(x);
-
-      // -2 [ [-1, -2], [0, -1], [2, 0], [3, 1] ]
-      // -1 [ [0, -1] [1, 0], [2, 1], [3, 2] ]
-      // 0  [ [0, 0], [1, 1], [2, 2], [3, 3]]
-      for (var i = 0; i < n; i++) {
-        if (board[y + 1]) {
-          if (board[y + 1][y]) {
-            diagonal.push(board[y + 1][y]);
-          }
+      for (var rowIndex = 0; rowIndex < n; rowIndex++) {
+        if (columnIndex >= 0 && columnIndex < n) {
+          diagonal.push(board[rowIndex][columnIndex]);
         }
-      }
-      
+        columnIndex++;
+      } //rowIndex automatically increases with for loop;
+
       var pieces = 0;
-      for (var j = 0; j < diagonal.length; j++) {
-        if (diagonal[j] === 1) {
-          pieces++;
-        }
+      for (var i = 0; i < diagonal.length; i++) {
+        pieces += diagonal[i];
         if (pieces > 1) {
           return true;
         }
       }
       
-      // if (start === 0) {
-      //   console.log('diagonal 0');
-      // }
-      // if (start === 1) {
-      //   console.log('diagonal starting at column 1, row 0');
-      //   // [[0, 1], [1, 2], [2, 3]]
-      //   var x = 0;
-      //   var diagonal = [];
-      //   var pieces = 0;
-
-      //   // maybe use reduce here? need to figure out a way to stop the for-loop, will start trying to push undefined
-      //   for (var i = 0; i < n - start; i++) {
-      //     diagonal.push(board[x][x + 1]);        
-      //   }
-      // }
-      // if (start === 2) {
-      //   console.log('diagonal 2');
-      // }
-
-      // might be nice to write a constructDiagonal function
       return false;
+
+      // figure out where on the board to start
+      // for loop to iterate over the board
+        // with every loop through, increase row + column index of the board
+        // push that value to the diagonal array
+
+      // check the diagonal array for conflicts
+        // return true or false based on this
+
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var n = this.get('n');
-      for (var i = (n / 2 * -1); i < (n / 2); i++) {  
+      for (var i = (-n + 2); i < (n - 1); i++) {  
         if (this.hasMajorDiagonalConflictAt(i)) {  
           return true;
         }
@@ -220,12 +197,38 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var n = this.get('n'); // length of board, which is 4
+      var board = this.rows();
+      var diagonal = [];
+      var columnIndex = minorDiagonalColumnIndexAtFirstRow; // y = columnIndex
+
+      for (var rowIndex = 0; rowIndex < n; rowIndex++) {
+        if (columnIndex < n && columnIndex >= 0) {
+          diagonal.push(board[rowIndex][columnIndex]);
+        }
+        columnIndex--;
+      } //rowIndex automatically increases with for loop;
+
+      var pieces = 0;
+      for (var i = 0; i < diagonal.length; i++) {
+        pieces += diagonal[i];
+        if (pieces > 1) {
+          return true;
+        }
+      }
+      
+      return false;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var n = this.get('n');
+      for (var i = (n + 2); i > 0; i--) {  
+        if (this.hasMinorDiagonalConflictAt(i)) {  
+          return true;
+        }
+      }
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
