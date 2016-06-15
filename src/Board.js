@@ -85,19 +85,22 @@
         if (row[i] === 1) {
           pieces++;
         }
-      }
-      return pieces > 1 ? true : false;
+        if (pieces > 1) {
+          return true;
+        }
+      } // could use reduce here, but it would be a for-loop as well, no?
+      // this may not iterate through whole array if we find conflict earlier
+      return false;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      var conflict = false;
       for (var i = 0; i < this.rows().length; i++) {
         if (this.hasRowConflictAt(i)) {
-          conflict = true;
+          return true;
         }
       }
-      return conflict;
+      return false;
     },
 
 
@@ -107,12 +110,32 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var board = this.rows(); // board is an array of each row
+      var column = [];
+      var pieces = 0;
+      board.forEach(function(row) {
+        column.push(row[colIndex]);
+      });
+
+      for (var i = 0; i < column.length; i++) {
+        if (column[i] === 1) {
+          pieces++;
+        }
+        if (pieces > 1) {
+          return true;
+        }
+      }
+      return false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      for (var i = 0; i < this.rows().length; i++) {
+        if (this.hasColConflictAts(i)) {
+          return true;
+        }
+      }
+      return false;
     },
 
 
