@@ -150,29 +150,53 @@
       var n = this.get('n');
       var board = this.rows();
       var start = majorDiagonalColumnIndexAtFirstRow;
-      if (start === 0) {
-        console.log('diagonal 0');
-      }
-      if (start === 1) {
-        // [[0, 1], [1, 2], [2, 3]]
-        var x = 0;
-        var diagonal = [];
-        var pieces = 0;
-        for (var i = 0; i < n - start; i++) {
-          diagonal.push(board[x][x + 1]);        
-        }
-        for (var j = 0; j < diagonal.length; j++) {
-          if (diagonal[j] === 1) {
-            pieces++;
-          }
-          if (pieces > 1) {
-            return true;
+      var y = start;
+      // if (y < 0) {
+      //   y = 
+      // }
+      var diagonal = [];
+
+      // console.log(x);
+
+      // -2 [ [-1, -2], [0, -1], [2, 0], [3, 1] ]
+      // -1 [ [0, -1] [1, 0], [2, 1], [3, 2] ]
+      // 0  [ [0, 0], [1, 1], [2, 2], [3, 3]]
+      for (var i = 0; i < n; i++) {
+        if (board[y + 1]) {
+          if (board[y + 1][y]) {
+            diagonal.push(board[y + 1][y]);
           }
         }
       }
-      if (start === 2) {
-        console.log('diagonal 2');
+      
+      var pieces = 0;
+      for (var j = 0; j < diagonal.length; j++) {
+        if (diagonal[j] === 1) {
+          pieces++;
+        }
+        if (pieces > 1) {
+          return true;
+        }
       }
+      
+      // if (start === 0) {
+      //   console.log('diagonal 0');
+      // }
+      // if (start === 1) {
+      //   console.log('diagonal starting at column 1, row 0');
+      //   // [[0, 1], [1, 2], [2, 3]]
+      //   var x = 0;
+      //   var diagonal = [];
+      //   var pieces = 0;
+
+      //   // maybe use reduce here? need to figure out a way to stop the for-loop, will start trying to push undefined
+      //   for (var i = 0; i < n - start; i++) {
+      //     diagonal.push(board[x][x + 1]);        
+      //   }
+      // }
+      // if (start === 2) {
+      //   console.log('diagonal 2');
+      // }
 
       // might be nice to write a constructDiagonal function
       return false;
@@ -181,7 +205,7 @@
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var n = this.get('n');
-      for (var i = 0; i < n - 1; i++) {  
+      for (var i = (n / 2 * -1); i < (n / 2); i++) {  
         if (this.hasMajorDiagonalConflictAt(i)) {  
           return true;
         }
