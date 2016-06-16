@@ -29,8 +29,7 @@ window.findNRooksSolution = function(n) {
       if (board.hasAnyRooksConflicts()) {
         board.togglePiece(row, i);
       } else {
-        var nextRow = row + 1
-        return addRow(board, nextRow);  
+        return addRow(board, row + 1);  
       }
     }
   }
@@ -80,8 +79,7 @@ window.findNQueensSolution = function(n) {
       if (board.hasAnyQueensConflicts()) {
         board.togglePiece(row, i);
       } else {
-        var nextRow = row + 1;
-        return addRow(board, nextRow);  
+        return addRow(board, row + 1);  
       }
     }
   }
@@ -97,8 +95,7 @@ window.findNQueensSolution = function(n) {
       if (board.hasAnyQueensConflicts()) {
         board.togglePiece(row, i);
       } else {
-        var nextRow = row + 1;
-        return addRow(board, nextRow);  
+        return addRow(board, row + 1);  
       }
     }
   }
@@ -112,13 +109,13 @@ window.findNQueensSolution = function(n) {
     i++;
   }
 
-  var i = 0;
+  var j = 0;
 
-  while (!solution && i < n) {
+  while (!solution && j < n) {
     var board = new Board({n: n});
-    board.togglePiece(0, i);
+    board.togglePiece(0, j);
     addRow(board, 1);
-    i++;
+    j++;
   }
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
