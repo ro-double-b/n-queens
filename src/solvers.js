@@ -16,83 +16,26 @@
 
 
 window.findNRooksSolution = function(n) {
-  var topDecisions = [];
-  var solutionBoards = [];
-
-  // creating all top decision branches
-  // for (var i = 0; i < n; i++) {
-  //   var board = new Board({n: n});
-  //   board.togglePiece(0, i);
-  //   topDecisions.push(board);
-  // }
-
   var board = new Board({n: n});
+  var solution = [];
 
-  var addRow = function(board, rowIndex) {
-    if (rowIndex === n) {
-      solutionBoards.push(board);
-    } else {
-      for (var i = 0; i < n; i++) {
-        debugger;
-        // var row = board.get(currentRow);
-        board.togglePiece(rowIndex, i);
-        if (board.hasAnyRooksConflicts()) {
-          board.togglePiece(rowIndex, i);
-        } else {
-          board.togglePiece(rowIndex, i);
-          var newBoard = new Board(board.rows());
-          newBoard.togglePiece(rowIndex, i);
-          addRow(newBoard, rowIndex++);        
-        } 
+  var addRow = function(board, row) {
+    if (row === n && !board.hasAnyRooksConflicts()) {
+      solution = board.rows();
+      return board;
+    }
+    for (var i = 0; i < n; i++) {
+      board.togglePiece(row, i);
+      if (board.hasAnyRooksConflicts()) {
+        board.togglePiece(row, i);
+      } else {
+        var nextRow = row + 1
+        return addRow(board, nextRow);  
       }
     }
-  };
-    // get the next row
-    // iterate through each index
-    // at each index, toggle, and then test for conflict
-    // if conflict, untoggle
-    // if no conflict, untoggle (to reset board), and then
-    // create new copy of that board, and toggle;
-    // and then recurisvely call with this board onto next row
-    // if no more rows, then its solved, 
-    // push it to solutions
-
+  }
 
   addRow(board, 0);
-  // console.dir(solutionBoards[0].rows());
-
-  // recursive function that goes into the next row
-  // finds an index with no conflict, toggle it
-  // call itself again, goes into the next row, 
-  // when no more rows, return board;
-
-  //[1, 0, 0] 
-  //[0, 0, 0] 2nd loop
-  // recursive function for next row
-
-  //[1, 0, 0]
-  //[0, 1, 0] third, figure out how toggle off previously toggled.
-  // recursive function for next row
-
-
-
-  // decision tree
-  // for first row, iterate and insert piece on each index (our top level decision);
-    // for each separate index, it'll have multiple branches
-    // within branch
-      // go to next row, iterate through and check for collisions
-      // if no collision, insert piece at index
-      // store this row
-      // recursion: move to next row and iterate again to check for collisions, insert piece, & store row
-        // when done iterating through all rows, push all rows with first decision to a result board & return result board
-  
-  var solution = solutionBoards.pop(); //fixme
-  if (n === 1) {
-    return [[1]];
-  }
-  // if (n === 1) {
-  //   solution
-  // }
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
@@ -108,7 +51,75 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solution = undefined;
+
+  if (n === 0) {
+    solution = []; 
+    return solution;
+  }
+
+  if (n === 1) {
+    solution = [[1]];
+    return solution;
+  }
+
+  if (n <= 3) {
+    var board = new Board({n: n});
+    solution = board.rows();
+    return solution;
+  }
+
+  var addRow = function(board, row) {
+    if (row === n) {
+      solution = board.rows();
+      console.table(solution);
+      return board;
+    }
+    for (var i = 0; i < n; i++) {
+      board.togglePiece(row, i);
+      if (board.hasAnyQueensConflicts()) {
+        board.togglePiece(row, i);
+      } else {
+        var nextRow = row + 1;
+        return addRow(board, nextRow);  
+      }
+    }
+  }
+
+  var backRow = function(board, row) {
+    if (row === n) {
+      solution = board.rows();
+      console.table(solution);
+      return board;
+    }
+    for (var i = n - 1; i > 0; i--) {
+      board.togglePiece(row, i);
+      if (board.hasAnyQueensConflicts()) {
+        board.togglePiece(row, i);
+      } else {
+        var nextRow = row + 1;
+        return addRow(board, nextRow);  
+      }
+    }
+  }
+
+  var i = 0;
+
+  while (!solution && i < n) {
+    var board = new Board({n: n});
+    board.togglePiece(0, i);
+    backRow(board, 1);
+    i++;
+  }
+
+  var i = 0;
+
+  while (!solution && i < n) {
+    var board = new Board({n: n});
+    board.togglePiece(0, i);
+    addRow(board, 1);
+    i++;
+  }
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
