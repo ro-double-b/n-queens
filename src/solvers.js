@@ -68,56 +68,129 @@ window.findNQueensSolution = function(n) {
     return solution;
   }
 
-  var addRow = function(board, row) {
-    if (row === n) {
-      solution = board.rows();
-      console.table(solution);
-      return board;
-    }
-    for (var i = 0; i < n; i++) {
-      board.togglePiece(row, i);
-      if (board.hasAnyQueensConflicts()) {
-        board.togglePiece(row, i);
+
+  var board = new Board({n: n});
+
+  var addRow = function(board, rowIndex) {
+  // base case: if rowInx = n 
+    // return solution
+    if (rowIndex === n) {
+      var rows = board.rows();
+      var queens = 0;
+      rows = _.flatten(rows); 
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i] === 1) {
+          queens++;
+        }
+      }
+      if (queens === n) {
+        solution = board.rows();
+        return board.rows();
       } else {
-        return addRow(board, row + 1);  
+        return;
+      }
+    } else {
+    // iterate through the array at rowIndx
+      for (var i = 0; i < n; i++) {
+      // toggle the element
+      // run collsion test
+        board.togglePiece(rowIndex, i);
+        // if test fails
+          // untoggle
+        if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+          board.togglePiece(rowIndex, i);
+        } else {
+          // recursively call with board, rowIndx++
+          // console.log('to adrow from uprow')
+          // console.table(board.rows())
+          return addRow(board, rowIndex + 1);
+        }
+      }
+      // If the for loop has eneded and nothing has been toggled    
+      // recursively call UpRow helper function with board, rowIndx--,
+      // console.log('up Row') 
+      // console.table(board.rows())
+      return upRow(board, rowIndex - 1);
+    }
+    
+  };
+
+  var upRow = function(board, rowIndex) {
+    // debugger
+  // UP ROW helper function take board and rowIndx
+    // iterate throught the array at rowIndx
+    var row = board.get(rowIndex);
+    var queenIndex = row.indexOf(1);
+
+    for (var i = queenIndex; i < n; i++) {
+      if (i === n - 1) {
+        if (row[i] === 1) {
+          board.togglePiece(rowIndex, i);
+          return upRow(board, rowIndex - 1);
+        } else {
+          board.togglePiece(rowIndex, i);
+          if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+            board.togglePiece(rowIndex, i);
+            return upRow(board, rowIndex - 1);
+          } else {
+            return addRow(board, rowIndex + 1);
+          }
+        } 
+      }
+      if (row[i] === 1) {
+        board.togglePiece(rowIndex, i);
+      } else {
+        board.togglePiece(rowIndex, i);
+        if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+          board.togglePiece(rowIndex, i);
+        } else {
+          return addRow(board, rowIndex + 1);
+        }
       }
     }
-  }
+  };
 
-  var backRow = function(board, row) {
-    if (row === n) {
-      solution = board.rows();
-      console.table(solution);
-      return board;
-    }
-    for (var i = n - 1; i > 0; i--) {
-      board.togglePiece(row, i);
-      if (board.hasAnyQueensConflicts()) {
-        board.togglePiece(row, i);
-      } else {
-        return addRow(board, row + 1);  
-      }
-    }
-  }
 
-  var i = 0;
+    // for (var i = index; i < n; i++) {
+    //   // testing to see if last colIndx
+    //   if (i === n - 1) {
+    //     if (row[i] === 0) {
+    //       board.togglePiece(rowIndex, i);
+    //       if (!board.hasAnyQueenConflictsOn(rowIndex, i)) {
+    //         return addRow(board, rowIndex + 1);
+    //       } else {
+    //         board.togglePiece(rowIndex, i);
+    //         return upRow(board, rowIndex - 1);
+    //       }
+    //     }
+    //   } 
 
-  while (!solution && i < n) {
-    var board = new Board({n: n});
-    board.togglePiece(0, i);
-    backRow(board, 1);
-    i++;
-  }
+    //   if (row[i] === 1) {
+    //     board.togglePiece(rowIndex, i);
+    //   } else if 
+    //   if (row[i] === 0) {
 
-  var j = 0;
 
-  while (!solution && j < n) {
-    var board = new Board({n: n});
-    board.togglePiece(0, j);
-    addRow(board, 1);
-    j++;
-  }
+    //   }
+    //     board.togglePiece(rowIndex, i + 1)
+    //     if (!board.hasAnyQueenConflictsOn(rowIndex, i + 1)) {
+    //       return addRow(board, rowIndex + 1);
+    //     } else {
+    //       board.togglePiece(rowIndex, i + 1);
+    //     }
+    //   }
+    // }
 
+
+
+
+        // toggle next i+1
+        // call addRow with board and rowIndx++
+
+
+  addRow(board, 0);
+  
+  
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
