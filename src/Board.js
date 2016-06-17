@@ -50,6 +50,13 @@
       );
     },
 
+    hasAnyOptimizedConflictsOn: function(rowIndex, colIndex){
+      return (this.hasColConflictAt(colIndex) ||
+        this.hasMajorDiagonalConflictAt(this._getFirstRowColumnIndexForMajorDiagonalOn(rowIndex, colIndex)) ||
+        this.hasMinorDiagonalConflictAt(this._getFirstRowColumnIndexForMinorDiagonalOn(rowIndex, colIndex))
+      );
+    },
+
     hasAnyQueensConflicts: function() {
       return this.hasAnyRooksConflicts() || this.hasAnyMajorDiagonalConflicts() || this.hasAnyMinorDiagonalConflicts();
     },
@@ -111,19 +118,14 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      var board = this.rows(); // board is an array of each row
-      var column = [];
+      var rows = this.rows(); // board is an array of each row
       var pieces = 0;
-      board.forEach(function(row) {
-        column.push(row[colIndex]);
-      });
-
-      for (var i = 0; i < column.length; i++) {
-        if (column[i] === 1) {
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i][colIndex] === 1) {
           pieces++;
-        }
-        if (pieces > 1) {
-          return true;
+          if (pieces > 1) {
+            return true;
+          }
         }
       }
       return false;
@@ -149,23 +151,21 @@
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
       var n = this.get('n'); // length of board, which is 4
       var board = this.rows();
-      var diagonal = [];
       var columnIndex = majorDiagonalColumnIndexAtFirstRow; // y = columnIndex
+      var pieces = 0;
 
       for (var rowIndex = 0; rowIndex < n; rowIndex++) {
         if (columnIndex >= 0 && columnIndex < n) {
-          diagonal.push(board[rowIndex][columnIndex]);
+          if (board[rowIndex][columnIndex] === 1) {
+            pieces++;
+            if (pieces > 1) {
+              return true;
+            }
+          }
         }
         columnIndex++;
       } //rowIndex automatically increases with for loop;
 
-      var pieces = 0;
-      for (var i = 0; i < diagonal.length; i++) {
-        pieces += diagonal[i];
-        if (pieces > 1) {
-          return true;
-        }
-      }
       
       return false;
 
@@ -199,24 +199,21 @@
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
       var n = this.get('n'); // length of board, which is 4
       var board = this.rows();
-      var diagonal = [];
       var columnIndex = minorDiagonalColumnIndexAtFirstRow; // y = columnIndex
+      var pieces = 0;
 
       for (var rowIndex = 0; rowIndex < n; rowIndex++) {
         if (columnIndex < n && columnIndex >= 0) {
-          diagonal.push(board[rowIndex][columnIndex]);
-        }
+          if (board[rowIndex][columnIndex] === 1) {
+            pieces++;
+            if (pieces > 1) {
+              return true;
+            }
+          }
+        }        
         columnIndex--;
       } //rowIndex automatically increases with for loop;
-
-      var pieces = 0;
-      for (var i = 0; i < diagonal.length; i++) {
-        pieces += diagonal[i];
-        if (pieces > 1) {
-          return true;
-        }
-      }
-      
+ 
       return false;
     },
 

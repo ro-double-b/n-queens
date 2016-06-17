@@ -26,7 +26,7 @@ window.findNRooksSolution = function(n) {
     }
     for (var i = 0; i < n; i++) {
       board.togglePiece(row, i);
-      if (board.hasAnyRooksConflicts()) {
+      if (board.hasColConflictAt(i)) {
         board.togglePiece(row, i);
       } else {
         return addRow(board, row + 1);
@@ -45,25 +45,24 @@ window.countNRooksSolutions = function(n) {
 
   var board = new Board({n: n});
 
-  var addRow = function(board, row) {
-    if (row === n && !board.hasAnyRooksConflicts()) {
+  var addRow = function(board, rowIndex) {
+    if (rowIndex === n) { // don't need to test, this is gonna work!
       solutionCount++;
-      return board;
+      return;
     }
+    var row = board.get(rowIndex);
     for (var i = 0; i < n; i++) {
-      board.togglePiece(row, i);
-      if (board.hasAnyRooksConflicts()) {
-        board.togglePiece(row, i);
+      row[i] = 1;
+      if (board.hasColConflictAt(i)) {
+        row[i] = 0;
       } else {
-        addRow(board, row + 1);
-        board.togglePiece(row, i);
+        addRow(board, rowIndex + 1);
+        row[i] = 0;
       }
     }
   };
 
   addRow(board, 0);
-
-
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
@@ -99,7 +98,7 @@ window.findNQueensSolution = function(n) {
     } else {
       for (var i = 0; i < n; i++) {
         board.togglePiece(rowIndex, i);
-        if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+        if (board.hasAnyOptimizedConflictsOn(rowIndex, i)) {
           board.togglePiece(rowIndex, i);
         } else {
           // recursively call with board, rowIndx++
@@ -123,7 +122,7 @@ window.findNQueensSolution = function(n) {
           return upRow(board, rowIndex - 1);
         } else {
           board.togglePiece(rowIndex, i);
-          if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+          if (board.hasAnyOptimizedConflictsOn(rowIndex, i)) {
             board.togglePiece(rowIndex, i);
             return upRow(board, rowIndex - 1);
           } else {
@@ -135,7 +134,7 @@ window.findNQueensSolution = function(n) {
         board.togglePiece(rowIndex, i);
       } else {
         board.togglePiece(rowIndex, i);
-        if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+        if (board.hasAnyOptimizedConflictsOn(rowIndex, i)) {
           board.togglePiece(rowIndex, i);
         } else {
           return addRow(board, rowIndex + 1);
@@ -163,24 +162,14 @@ window.countNQueensSolutions = function(n) {
     solutionCount++;
   }
 
-  // if (n === 3 || n === 2) {
-  //   var board = new Board({n: n});
-  //   solutionCount = 0;
-
-  // }
-
-
-    //             n = [0, 1, 2, 3, 4, 5,  6,  7,  8]
-    // solutionCount = [1, 1, 0, 0, 2, 10, 4, 40, 92][n];
-
   var addRow = function(board, rowIndex) {
-    if (rowIndex === n && !board.hasAnyQueensConflicts()) {
+    if (rowIndex === n) { // don't need to test, it'll pass
       solutionCount++;
       upRow(board, rowIndex - 1);
     } else {
       for (var i = 0; i < n; i++) {
         board.togglePiece(rowIndex, i);
-        if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+        if (board.hasAnyOptimizedConflictsOn(rowIndex, i)) {
           board.togglePiece(rowIndex, i);
         } else {
           // recursively call with board, rowIndx++
@@ -195,7 +184,7 @@ window.countNQueensSolutions = function(n) {
 
   var upRow = function(board, rowIndex) {
     if (rowIndex < 0) {
-      return;
+      return; // no solution, for n = 2, n = 3;
     }
     var row = board.get(rowIndex);
     var queenIndex = row.indexOf(1);
@@ -208,7 +197,7 @@ window.countNQueensSolutions = function(n) {
           return upRow(board, rowIndex - 1);
         } else {
           board.togglePiece(rowIndex, i);
-          if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+          if (board.hasAnyOptimizedConflictsOn(rowIndex, i)) {
             board.togglePiece(rowIndex, i);
             return upRow(board, rowIndex - 1);
           } else {
@@ -220,7 +209,7 @@ window.countNQueensSolutions = function(n) {
         board.togglePiece(rowIndex, i);
       } else {
         board.togglePiece(rowIndex, i);
-        if (board.hasAnyQueenConflictsOn(rowIndex, i)) {
+        if (board.hasAnyOptimizedConflictsOn(rowIndex, i)) {
           board.togglePiece(rowIndex, i);
         } else {
           return addRow(board, rowIndex + 1);
